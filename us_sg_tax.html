@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>US vs Singapore Tax Calculator</title>
+    <style>
+        :root {
+            --color-bg-base: #fcfcf9;
+            --color-bg-surface: #fffffe;
+            --color-text-primary: #13343b;
+            --color-text-secondary: #626c71;
+            --color-primary: #218d8d;
+            --color-primary-hover: #1d747d;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-card-border: rgba(94, 82, 64, 0.12);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-bg-base: #1f2121;
+                --color-bg-surface: #262828;
+                --color-text-primary: #f5f5f5;
+                --color-text-secondary: rgba(167, 169, 169, 0.7);
+                --color-primary: #32b8c6;
+                --color-primary-hover: #2da6b2;
+                --color-border: rgba(119, 124, 124, 0.3);
+                --color-card-border: rgba(119, 124, 124, 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--color-text-primary);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--color-text-primary);
+        }
+
+        .input-section {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-primary);
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: var(--color-bg-base);
+            color: var(--color-text-primary);
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .btn {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-card h3 {
+            margin-top: 0;
+            color: var(--color-primary);
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .highlight {
+            background: rgba(33, 141, 141, 0.1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .comparison-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .comparison-table th {
+            background: var(--color-bg-surface);
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(33, 141, 141, 0.05);
+        }
+
+        .positive {
+            color: #218d8d;
+        }
+
+        .negative {
+            color: #c0152f;
+        }
+
+        .breakdown {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: var(--color-bg-base);
+            border-radius: 8px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .assumptions {
+            background: var(--color-bg-surface);
+            border: 1px solid var(--color-card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .assumptions ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .assumptions li {
+            margin: 0.5rem 0;
+            color: var(--color-text-secondary);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--color-border);
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .exchange-rate-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .rate-status {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .rate-live {
+            background: rgba(33, 141, 141, 0.1);
+            color: var(--color-primary);
+        }
+
+        .rate-default {
+            background: rgba(192, 21, 47, 0.1);
+            color: #c0152f;
+        }
+
+        .calculation-details {
+            margin-top: 1rem;
+            border-top: 1px solid var(--color-border);
+            padding-top: 1rem;
+        }
+
+        .expand-btn {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .expand-btn:hover {
+            background: var(--color-secondary);
+            border-color: var(--color-primary);
+        }
+
+        .expand-icon {
+            transition: transform 0.2s;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .calc-step {
+            background: var(--color-bg-base);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 0.75rem 0;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .calc-step-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .calc-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.85rem;
+            color: var(--color-text-secondary);
+        }
+
+        .calc-line-result {
+            font-weight: 600;
+            color: var(--color-text-primary);
+            border-top: 1px solid var(--color-border);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+
+        .details-hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇺🇸 🇸🇬 US vs Singapore Tax Calculator</h1>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">
+            Compare after-tax income for US citizens living in the United States versus Singapore
+        </p>
+
+        <div class="input-section">
+            <h2>Input Your Information</h2>
+            <div class="input-grid">
+                <div class="form-group">
+                    <label for="income">Annual Pre-Tax Income (USD)</label>
+                    <input type="number" id="income" value="1000000" min="0" step="1000">
+                </div>
+                <div class="form-group">
+                    <label for="filingStatus">US Filing Status</label>
+                    <select id="filingStatus">
+                        <option value="single">Single</option>
+                        <option value="married">Married Filing Jointly</option>
+                        <option value="head">Head of Household</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" value="35" min="18" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="exchangeRate">USD to SGD Exchange Rate</label>
+                    <input type="number" id="exchangeRate" value="1.35" min="0" step="0.01" readonly>
+                    <small id="rateSource" style="margin-top: 0.5rem; color: var(--color-text-secondary); font-size: 0.85rem;">Loading current rate...</small>
+                </div>
+            </div>
+            <button class="btn" onclick="calculate()">Calculate Tax Comparison</button>
+        </div>
+
+        <div id="results"></div>
+
+        <footer class="footer">
+            <div>US vs Singapore Tax Calculator for US Citizens</div>
+            <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-secondary);">
+                Version: February 21, 2026 | Tax Year: 2026
+            </div>
+            <div class="exchange-rate-info">
+                <span id="footerExchangeRate">Exchange Rate: Loading...</span>
+                <button class="refresh-btn" onclick="fetchExchangeRate()">🔄 Refresh Rate</button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentExchangeRate = 1.35;
+        let rateSource = 'default';
+        let lastUpdated = null;
+
+        async function fetchExchangeRate() {
+            try {
+                const response = await fetch('https://api.frankfurter.app/latest?from=USD&to=SGD');
+                const data = await response.json();
+                
+                if (data && data.rates && data.rates.SGD) {
+                    currentExchangeRate = data.rates.SGD;
+                    rateSource = 'live';
+                    lastUpdated = new Date(data.date);
+                    
+                    document.getElementById('exchangeRate').value = currentExchangeRate.toFixed(4);
+                    updateRateDisplay();
+                    calculate();
+                }
+            } catch (error) {
+                console.error('Failed to fetch exchange rate:', error);
+                rateSource = 'default';
+                updateRateDisplay();
+            }
+        }
+
+        function updateRateDisplay() {
+            const rateSourceEl = document.getElementById('rateSource');
+            const footerRateEl = document.getElementById('footerExchangeRate');
+            
+            if (rateSource === 'live' && lastUpdated) {
+                const dateStr = lastUpdated.toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                rateSourceEl.innerHTML = `<span class="rate-status rate-live">● LIVE</span> Updated: ${dateStr}`;
+                footerRateEl.innerHTML = `Current Exchange Rate: <strong>1 USD = ${currentExchangeRate.toFixed(4)} SGD</strong> <span class="rate-status rate-live">● LIVE</span> (${dateStr})`;
+            } else {
+                rateSourceEl.innerHTML = `<span class="rate-status rate-default">● DEFAULT</span> Using fallback rate`;
+                footerRateEl.innerHTML = `Exchange Rate: <strong>1 USD = ${currentExchangeRate.toFixed(4)} SGD</strong> <span class="rate-status rate-default">● DEFAULT</span>`;
+            }
+        }
+
+        // Fetch exchange rate on page load
+        fetchExchangeRate();
+        function calculate() {
+            const income = parseFloat(document.getElementById('income').value);
+            const filingStatus = document.getElementById('filingStatus').value;
+            const age = parseInt(document.getElementById('age').value);
+            const exchangeRate = parseFloat(document.getElementById('exchangeRate').value);
+
+            // US Calculations
+            const standardDeduction = filingStatus === 'single' ? 16100 : filingStatus === 'married' ? 32200 : 24150;
+            const usTaxableIncome = Math.max(0, income - standardDeduction);
+            
+            // Federal tax brackets 2026 (Single)
+            const federalTax = calculateFederalTax(usTaxableIncome, filingStatus);
+            
+            // FICA taxes
+            const ssWageBase = 184500;
+            const socialSecurityTax = Math.min(income, ssWageBase) * 0.062;
+            const medicareTax = income * 0.0145;
+            const additionalMedicare = income > 200000 ? (income - 200000) * 0.009 : 0;
+            const ficaTax = socialSecurityTax + medicareTax + additionalMedicare;
+            
+            const totalUSTax = federalTax + ficaTax;
+            const usAfterTax = income - totalUSTax;
+            const usEffectiveRate = (totalUSTax / income * 100).toFixed(2);
+
+            // Singapore Calculations
+            const incomeSGD = income * exchangeRate;
+            const sgTaxSGD = calculateSingaporeTax(incomeSGD);
+            const sgTax = sgTaxSGD / exchangeRate;
+            
+            // CPF Contribution
+            const cpfRate = age < 55 ? 0.20 : age <= 60 ? 0.18 : age <= 65 ? 0.125 : age <= 70 ? 0.075 : 0.05;
+            const cpfMonthlyCeiling = 8000; // SGD
+            const cpfAnnualCeilingSGD = cpfMonthlyCeiling * 12;
+            const cpfBaseSGD = Math.min(incomeSGD, cpfAnnualCeilingSGD);
+            const cpfSGD = cpfBaseSGD * cpfRate;
+            const cpf = cpfSGD / exchangeRate;
+            
+            // US tax obligations while in Singapore
+            const feie = 132900;
+            let usExpatTax = 0;
+            let netUSExpat = 0;
+            
+            if (income > feie) {
+                const incomeAfterFEIE = income - feie;
+                const taxableAfterFEIE = Math.max(0, incomeAfterFEIE - standardDeduction);
+                const usExpatFederalTax = calculateFederalTax(taxableAfterFEIE, filingStatus);
+                const foreignTaxCredit = sgTax;
+                netUSExpat = Math.max(0, usExpatFederalTax - foreignTaxCredit);
+                usExpatTax = usExpatFederalTax;
+            }
+            
+            // Calculate detailed breakdowns for display
+            const usDetails = calculateUSDetails(income, standardDeduction, usTaxableIncome, filingStatus);
+            const sgDetails = calculateSGDetails(income, exchangeRate, age, feie, standardDeduction, filingStatus, sgTax);
+            
+            const totalSGTax = sgTax + netUSExpat;
+            const sgAfterTax = income - totalSGTax;
+            const sgTakeHome = sgAfterTax - cpf;
+            const sgEffectiveRate = (totalSGTax / income * 100).toFixed(2);
+            
+            // Comparison
+            const taxDifference = totalUSTax - totalSGTax;
+            const takeHomeDifference = usAfterTax - sgTakeHome;
+
+            displayResults({
+                income,
+                usAfterTax,
+                totalUSTax,
+                usEffectiveRate,
+                federalTax,
+                ficaTax,
+                sgAfterTax,
+                sgTakeHome,
+                totalSGTax,
+                sgEffectiveRate,
+                sgTax,
+                cpf,
+                netUSExpat,
+                usExpatTax,
+                feie,
+                taxDifference,
+                takeHomeDifference,
+                usDetails,
+                sgDetails
+            });
+        }
+
+        function calculateUSDetails(income, standardDeduction, taxableIncome, filingStatus) {
+            const details = {
+                grossIncome: income,
+                standardDeduction: standardDeduction,
+                taxableIncome: taxableIncome,
+                brackets: [],
+                fica: {
+                    ssWageBase: 184500,
+                    ssTax: Math.min(income, 184500) * 0.062,
+                    medicareTax: income * 0.0145,
+                    additionalMedicare: income > 200000 ? (income - 200000) * 0.009 : 0
+                }
+            };
+
+            const brackets = filingStatus === 'single' ? [
+                { limit: 12400, rate: 0.10 },
+                { limit: 50400, rate: 0.12 },
+                { limit: 105700, rate: 0.22 },
+                { limit: 197300, rate: 0.24 },
+                { limit: 250525, rate: 0.32 },
+                { limit: 626350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ] : filingStatus === 'married' ? [
+                { limit: 24800, rate: 0.10 },
+                { limit: 100800, rate: 0.12 },
+                { limit: 211400, rate: 0.22 },
+                { limit: 394600, rate: 0.24 },
+                { limit: 501050, rate: 0.32 },
+                { limit: 751600, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ] : [
+                { limit: 18700, rate: 0.10 },
+                { limit: 75600, rate: 0.12 },
+                { limit: 158550, rate: 0.22 },
+                { limit: 210050, rate: 0.24 },
+                { limit: 250525, rate: 0.32 },
+                { limit: 626350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ];
+
+            let previousLimit = 0;
+            for (let bracket of brackets) {
+                if (taxableIncome > previousLimit) {
+                    const taxableInBracket = Math.min(taxableIncome, bracket.limit) - previousLimit;
+                    const tax = taxableInBracket * bracket.rate;
+                    details.brackets.push({
+                        from: previousLimit,
+                        to: bracket.limit,
+                        rate: bracket.rate,
+                        taxableAmount: taxableInBracket,
+                        tax: tax
+                    });
+                    previousLimit = bracket.limit;
+                }
+            }
+
+            return details;
+        }
+
+        function calculateSGDetails(income, exchangeRate, age, feie, standardDeduction, filingStatus, sgTax) {
+            const incomeSGD = income * exchangeRate;
+            const details = {
+                incomeUSD: income,
+                exchangeRate: exchangeRate,
+                incomeSGD: incomeSGD,
+                brackets: [],
+                cpf: {
+                    age: age,
+                    rate: age < 55 ? 0.20 : age <= 60 ? 0.18 : age <= 65 ? 0.125 : age <= 70 ? 0.075 : 0.05,
+                    ceiling: 96000,
+                    base: Math.min(incomeSGD, 96000),
+                    contributionSGD: Math.min(incomeSGD, 96000) * (age < 55 ? 0.20 : age <= 60 ? 0.18 : age <= 65 ? 0.125 : age <= 70 ? 0.075 : 0.05),
+                    contributionUSD: (Math.min(incomeSGD, 96000) * (age < 55 ? 0.20 : age <= 60 ? 0.18 : age <= 65 ? 0.125 : age <= 70 ? 0.075 : 0.05)) / exchangeRate
+                },
+                usExpat: {
+                    feie: feie,
+                    incomeAfterFEIE: income > feie ? income - feie : 0,
+                    taxableAfterFEIE: income > feie ? Math.max(0, (income - feie) - standardDeduction) : 0,
+                    usTaxBeforeCredit: 0,
+                    foreignTaxCredit: sgTax,
+                    netUSTax: 0,
+                    expatBrackets: []
+                }
+            };
+
+            const sgBrackets = [
+                { limit: 20000, rate: 0 },
+                { limit: 30000, rate: 0.02 },
+                { limit: 40000, rate: 0.035 },
+                { limit: 80000, rate: 0.07 },
+                { limit: 120000, rate: 0.115 },
+                { limit: 160000, rate: 0.15 },
+                { limit: 200000, rate: 0.18 },
+                { limit: 240000, rate: 0.19 },
+                { limit: 280000, rate: 0.195 },
+                { limit: 320000, rate: 0.20 },
+                { limit: 500000, rate: 0.22 },
+                { limit: 1000000, rate: 0.23 },
+                { limit: Infinity, rate: 0.24 }
+            ];
+
+            let previousLimit = 0;
+            for (let bracket of sgBrackets) {
+                if (incomeSGD > previousLimit) {
+                    const taxableInBracket = Math.min(incomeSGD, bracket.limit) - previousLimit;
+                    const tax = taxableInBracket * bracket.rate;
+                    if (bracket.rate > 0) {
+                        details.brackets.push({
+                            from: previousLimit,
+                            to: bracket.limit,
+                            rate: bracket.rate,
+                            taxableAmount: taxableInBracket,
+                            tax: tax
+                        });
+                    }
+                    previousLimit = bracket.limit;
+                }
+            }
+
+            if (income > feie) {
+                const taxableAfterFEIE = details.usExpat.taxableAfterFEIE;
+                const brackets = filingStatus === 'single' ? [
+                    { limit: 12400, rate: 0.10 },
+                    { limit: 50400, rate: 0.12 },
+                    { limit: 105700, rate: 0.22 },
+                    { limit: 197300, rate: 0.24 },
+                    { limit: 250525, rate: 0.32 },
+                    { limit: 626350, rate: 0.35 },
+                    { limit: Infinity, rate: 0.37 }
+                ] : filingStatus === 'married' ? [
+                    { limit: 24800, rate: 0.10 },
+                    { limit: 100800, rate: 0.12 },
+                    { limit: 211400, rate: 0.22 },
+                    { limit: 394600, rate: 0.24 },
+                    { limit: 501050, rate: 0.32 },
+                    { limit: 751600, rate: 0.35 },
+                    { limit: Infinity, rate: 0.37 }
+                ] : [
+                    { limit: 18700, rate: 0.10 },
+                    { limit: 75600, rate: 0.12 },
+                    { limit: 158550, rate: 0.22 },
+                    { limit: 210050, rate: 0.24 },
+                    { limit: 250525, rate: 0.32 },
+                    { limit: 626350, rate: 0.35 },
+                    { limit: Infinity, rate: 0.37 }
+                ];
+
+                let usExpatTax = 0;
+                let previousLimit = 0;
+                for (let bracket of brackets) {
+                    if (taxableAfterFEIE > previousLimit) {
+                        const taxableInBracket = Math.min(taxableAfterFEIE, bracket.limit) - previousLimit;
+                        const tax = taxableInBracket * bracket.rate;
+                        details.usExpat.expatBrackets.push({
+                            from: previousLimit,
+                            to: bracket.limit,
+                            rate: bracket.rate,
+                            taxableAmount: taxableInBracket,
+                            tax: tax
+                        });
+                        usExpatTax += tax;
+                        previousLimit = bracket.limit;
+                    }
+                }
+                details.usExpat.usTaxBeforeCredit = usExpatTax;
+                details.usExpat.netUSTax = Math.max(0, usExpatTax - sgTax);
+            }
+
+            return details;
+        }
+
+        function calculateFederalTax(taxableIncome, filingStatus) {
+            // 2026 tax brackets for single filer
+            const brackets = filingStatus === 'single' ? [
+                { limit: 12400, rate: 0.10 },
+                { limit: 50400, rate: 0.12 },
+                { limit: 105700, rate: 0.22 },
+                { limit: 197300, rate: 0.24 },
+                { limit: 250525, rate: 0.32 },
+                { limit: 626350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ] : filingStatus === 'married' ? [
+                { limit: 24800, rate: 0.10 },
+                { limit: 100800, rate: 0.12 },
+                { limit: 211400, rate: 0.22 },
+                { limit: 394600, rate: 0.24 },
+                { limit: 501050, rate: 0.32 },
+                { limit: 751600, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ] : [
+                { limit: 18700, rate: 0.10 },
+                { limit: 75600, rate: 0.12 },
+                { limit: 158550, rate: 0.22 },
+                { limit: 210050, rate: 0.24 },
+                { limit: 250525, rate: 0.32 },
+                { limit: 626350, rate: 0.35 },
+                { limit: Infinity, rate: 0.37 }
+            ];
+
+            let tax = 0;
+            let previousLimit = 0;
+
+            for (let bracket of brackets) {
+                if (taxableIncome > previousLimit) {
+                    const taxableInBracket = Math.min(taxableIncome, bracket.limit) - previousLimit;
+                    tax += taxableInBracket * bracket.rate;
+                    previousLimit = bracket.limit;
+                } else {
+                    break;
+                }
+            }
+
+            return tax;
+        }
+
+        function calculateSingaporeTax(incomeSGD) {
+            const brackets = [
+                { limit: 20000, rate: 0 },
+                { limit: 30000, rate: 0.02 },
+                { limit: 40000, rate: 0.035 },
+                { limit: 80000, rate: 0.07 },
+                { limit: 120000, rate: 0.115 },
+                { limit: 160000, rate: 0.15 },
+                { limit: 200000, rate: 0.18 },
+                { limit: 240000, rate: 0.19 },
+                { limit: 280000, rate: 0.195 },
+                { limit: 320000, rate: 0.20 },
+                { limit: 500000, rate: 0.22 },
+                { limit: 1000000, rate: 0.23 },
+                { limit: Infinity, rate: 0.24 }
+            ];
+
+            let tax = 0;
+            let previousLimit = 0;
+
+            for (let bracket of brackets) {
+                if (incomeSGD > previousLimit) {
+                    const taxableInBracket = Math.min(incomeSGD, bracket.limit) - previousLimit;
+                    tax += taxableInBracket * bracket.rate;
+                    previousLimit = bracket.limit;
+                } else {
+                    break;
+                }
+            }
+
+            return tax;
+        }
+
+        function formatCurrency(value) {
+            return '$' + value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = `
+                <div class="highlight">
+                    <h2 style="margin-top: 0;">Summary Comparison</h2>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>United States</th>
+                                <th>Singapore</th>
+                                <th>Difference</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Gross Income</strong></td>
+                                <td>${formatCurrency(data.income)}</td>
+                                <td>${formatCurrency(data.income)}</td>
+                                <td>$0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Tax Paid</strong></td>
+                                <td>${formatCurrency(data.totalUSTax)}</td>
+                                <td>${formatCurrency(data.totalSGTax)}</td>
+                                <td class="${data.taxDifference > 0 ? 'negative' : 'positive'}">
+                                    ${formatCurrency(Math.abs(data.taxDifference))} ${data.taxDifference > 0 ? 'more in US' : 'less in SG'}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>After-Tax Income</strong></td>
+                                <td>${formatCurrency(data.usAfterTax)}</td>
+                                <td>${formatCurrency(data.sgAfterTax)}</td>
+                                <td class="${data.taxDifference < 0 ? 'negative' : 'positive'}">
+                                    ${formatCurrency(Math.abs(data.sgAfterTax - data.usAfterTax))} ${data.sgAfterTax > data.usAfterTax ? 'more in SG' : 'more in US'}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Effective Tax Rate</strong></td>
+                                <td>${data.usEffectiveRate}%</td>
+                                <td>${data.sgEffectiveRate}%</td>
+                                <td class="${parseFloat(data.sgEffectiveRate) < parseFloat(data.usEffectiveRate) ? 'positive' : 'negative'}">
+                                    ${Math.abs(parseFloat(data.usEffectiveRate) - parseFloat(data.sgEffectiveRate)).toFixed(2)}%
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>CPF Contribution</strong></td>
+                                <td>$0</td>
+                                <td>${formatCurrency(data.cpf)}</td>
+                                <td>${formatCurrency(data.cpf)} (forced savings)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Actual Take-Home</strong></td>
+                                <td>${formatCurrency(data.usAfterTax)}</td>
+                                <td>${formatCurrency(data.sgTakeHome)}</td>
+                                <td class="${data.takeHomeDifference < 0 ? 'positive' : 'negative'}">
+                                    ${formatCurrency(Math.abs(data.takeHomeDifference))} ${data.takeHomeDifference < 0 ? 'more in SG' : 'more in US'}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="results">
+                    <div class="result-card">
+                        <h3>🇺🇸 United States</h3>
+                        <div class="breakdown">
+                            <div class="breakdown-item">
+                                <span>Federal Income Tax:</span>
+                                <strong>${formatCurrency(data.federalTax)}</strong>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>FICA (SS + Medicare):</span>
+                                <strong>${formatCurrency(data.ficaTax)}</strong>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>State Tax:</span>
+                                <strong>$0</strong>
+                            </div>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Total Tax</span>
+                            <span class="result-value">${formatCurrency(data.totalUSTax)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">After-Tax Income</span>
+                            <span class="result-value">${formatCurrency(data.usAfterTax)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Effective Rate</span>
+                            <span class="result-value">${data.usEffectiveRate}%</span>
+                        </div>
+                        <button class="expand-btn" onclick="toggleDetails('us-details')">
+                            <span>Show Calculation Details</span>
+                            <span class="expand-icon" id="us-details-icon">▼</span>
+                        </button>
+                        <div id="us-details" class="calculation-details details-hidden">
+                            ${generateUSDetailsHTML(data.usDetails, data.federalTax, data.ficaTax)}
+                        </div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>🇸🇬 Singapore (As Tax Resident)</h3>
+                        <div class="breakdown">
+                            <div class="breakdown-item">
+                                <span>Singapore Income Tax:</span>
+                                <strong>${formatCurrency(data.sgTax)}</strong>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>US Tax on Income Above FEIE:</span>
+                                <strong>${formatCurrency(data.usExpatTax)}</strong>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Foreign Tax Credit:</span>
+                                <strong>-${formatCurrency(data.sgTax)}</strong>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Net US Tax Due:</span>
+                                <strong>${formatCurrency(data.netUSExpat)}</strong>
+                            </div>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Total Tax</span>
+                            <span class="result-value">${formatCurrency(data.totalSGTax)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">After-Tax Income</span>
+                            <span class="result-value">${formatCurrency(data.sgAfterTax)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">CPF Contribution</span>
+                            <span class="result-value">${formatCurrency(data.cpf)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Take-Home After CPF</span>
+                            <span class="result-value">${formatCurrency(data.sgTakeHome)}</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-label">Effective Rate</span>
+                            <span class="result-value">${data.sgEffectiveRate}%</span>
+                        </div>
+                        <button class="expand-btn" onclick="toggleDetails('sg-details')">
+                            <span>Show Calculation Details</span>
+                            <span class="expand-icon" id="sg-details-icon">▼</span>
+                        </button>
+                        <div id="sg-details" class="calculation-details details-hidden">
+                            ${generateSGDetailsHTML(data.sgDetails, data.sgTax, data.cpf)}
+                        </div>
+                    </div>
+                </div>        <div class="assumptions">
+            <h3>Key Assumptions &amp; Notes</h3>
+            <ul>
+                <li>US citizen subject to worldwide taxation</li>
+                <li>Singapore has NO comprehensive tax treaty with US for income tax</li>
+                <li>Singapore uses territorial taxation (only SG-sourced income taxed)</li>
+                <li>Tax resident = 183+ days in country per year</li>
+                <li>Foreign Earned Income Exclusion (FEIE) 2026: ${formatCurrency(data.feie)}</li>
+                <li>CPF contributions are mandatory retirement savings, not pure tax</li>
+                <li>Above FEIE threshold, US citizens must file taxes on excess income</li>
+                <li>Foreign Tax Credit can offset US tax but doesn't eliminate all double taxation</li>
+                <li>No US-Singapore totalization agreement for social security</li>
+                <li>State taxes not included (varies by state; some states have 0% tax)</li>
+            </ul>
+        </div>
+
+        <div class="assumptions">
+            <h3>Hardcoded Values &amp; Version Information</h3>
+            <div style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(33, 141, 141, 0.1); border-radius: 6px; border-left: 3px solid var(--color-primary);">
+                <strong>Last Updated:</strong> February 21, 2026<br>
+                <strong>Tax Year:</strong> 2026
+            </div>
+            <h4 style="font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--color-primary);">US Tax Parameters (2026)</h4>
+            <ul>
+                <li><strong>Standard Deduction:</strong> Single: $16,100 | Married: $32,200 | Head of Household: $24,150</li>
+                <li><strong>Social Security Wage Base:</strong> $184,500</li>
+                <li><strong>FICA Rates:</strong> Social Security 6.2%, Medicare 1.45%, Additional Medicare 0.9% (over $200,000)</li>
+                <li><strong>Foreign Earned Income Exclusion (FEIE):</strong> $132,900</li>
+                <li><strong>Federal Tax Brackets (Single):</strong>
+                    <ul style="margin-top: 0.25rem;">
+                        <li>10% up to $12,400</li>
+                        <li>12% from $12,401 to $50,400</li>
+                        <li>22% from $50,401 to $105,700</li>
+                        <li>24% from $105,701 to $197,300</li>
+                        <li>32% from $197,301 to $250,525</li>
+                        <li>35% from $250,526 to $626,350</li>
+                        <li>37% over $626,350</li>
+                    </ul>
+                </li>
+                <li><strong>Federal Tax Brackets (Married Filing Jointly):</strong>
+                    <ul style="margin-top: 0.25rem;">
+                        <li>10% up to $24,800</li>
+                        <li>12% from $24,801 to $100,800</li>
+                        <li>22% from $100,801 to $211,400</li>
+                        <li>24% from $211,401 to $394,600</li>
+                        <li>32% from $394,601 to $501,050</li>
+                        <li>35% from $501,051 to $751,600</li>
+                        <li>37% over $751,600</li>
+                    </ul>
+                </li>
+                <li><strong>Federal Tax Brackets (Head of Household):</strong>
+                    <ul style="margin-top: 0.25rem;">
+                        <li>10% up to $18,700</li>
+                        <li>12% from $18,701 to $75,600</li>
+                        <li>22% from $75,601 to $158,550</li>
+                        <li>24% from $158,551 to $210,050</li>
+                        <li>32% from $210,051 to $250,525</li>
+                        <li>35% from $250,526 to $626,350</li>
+                        <li>37% over $626,350</li>
+                    </ul>
+                </li>
+            </ul>
+            <h4 style="font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--color-primary);">Singapore Tax Parameters (2026)</h4>
+            <ul>
+                <li><strong>CPF Employee Contribution Rates by Age:</strong>
+                    <ul style="margin-top: 0.25rem;">
+                        <li>Under 55: 20%</li>
+                        <li>55-60: 18%</li>
+                        <li>61-65: 12.5%</li>
+                        <li>66-70: 7.5%</li>
+                        <li>Over 70: 5%</li>
+                    </ul>
+                </li>
+                <li><strong>CPF Monthly Salary Ceiling:</strong> SGD $8,000 (Annual: SGD $96,000)</li>
+                <li><strong>Income Tax Brackets (SGD):</strong>
+                    <ul style="margin-top: 0.25rem;">
+                        <li>0% up to $20,000</li>
+                        <li>2% from $20,001 to $30,000</li>
+                        <li>3.5% from $30,001 to $40,000</li>
+                        <li>7% from $40,001 to $80,000</li>
+                        <li>11.5% from $80,001 to $120,000</li>
+                        <li>15% from $120,001 to $160,000</li>
+                        <li>18% from $160,001 to $200,000</li>
+                        <li>19% from $200,001 to $240,000</li>
+                        <li>19.5% from $240,001 to $280,000</li>
+                        <li>20% from $280,001 to $320,000</li>
+                        <li>22% from $320,001 to $500,000</li>
+                        <li>23% from $500,001 to $1,000,000</li>
+                        <li>24% over $1,000,000</li>
+                    </ul>
+                </li>
+            </ul>
+            <h4 style="font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--color-primary);">Exchange Rate</h4>
+            <ul>
+                <li><strong>Live Rate:</strong> Fetched from Frankfurter API (European Central Bank data)</li>
+                <li><strong>Fallback Rate:</strong> 1 USD = 1.35 SGD (if API unavailable)</li>
+                <li><strong>Update Frequency:</strong> Manual refresh via button or automatic on page load</li>
+            </ul>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(192, 21, 47, 0.1); border-radius: 6px; border-left: 3px solid #c0152f;">
+                <strong>⚠️ Important:</strong> Tax laws change annually. This calculator uses 2026 parameters. Always consult a qualified tax professional for personalized advice.
+            </div>
+        </div>
+            `;
+        }
+
+        function toggleDetails(detailsId) {
+            const details = document.getElementById(detailsId);
+            const icon = document.getElementById(detailsId + '-icon');
+            
+            if (details.classList.contains('details-hidden')) {
+                details.classList.remove('details-hidden');
+                icon.classList.add('rotated');
+                icon.textContent = '▲';
+            } else {
+                details.classList.add('details-hidden');
+                icon.classList.remove('rotated');
+                icon.textContent = '▼';
+            }
+        }
+
+        function generateUSDetailsHTML(details, totalFederalTax, totalFICA) {
+            let html = '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 1: Calculate Taxable Income</div>';
+            html += `<div class="calc-line"><span>Gross Income:</span><span>${formatCurrency(details.grossIncome)}</span></div>`;
+            html += `<div class="calc-line"><span>Standard Deduction:</span><span>-${formatCurrency(details.standardDeduction)}</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>Taxable Income:</span><span>${formatCurrency(details.taxableIncome)}</span></div>`;
+            html += '</div>';
+
+            html += '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 2: Federal Income Tax (2026 Brackets)</div>';
+            details.brackets.forEach(bracket => {
+                const limitStr = bracket.to === Infinity ? '∞' : formatCurrency(bracket.to);
+                html += `<div class="calc-line"><span>${formatCurrency(bracket.from)} - ${limitStr} @ ${(bracket.rate * 100).toFixed(1)}%:</span><span>${formatCurrency(bracket.taxableAmount)} × ${(bracket.rate * 100).toFixed(1)}% = ${formatCurrency(bracket.tax)}</span></div>`;
+            });
+            html += `<div class="calc-line calc-line-result"><span>Total Federal Tax:</span><span>${formatCurrency(totalFederalTax)}</span></div>`;
+            html += '</div>';
+
+            html += '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 3: FICA Taxes</div>';
+            html += `<div class="calc-line"><span>Social Security (6.2% on first ${formatCurrency(details.fica.ssWageBase)}):</span><span>${formatCurrency(details.fica.ssTax)}</span></div>`;
+            html += `<div class="calc-line"><span>Medicare (1.45% on all income):</span><span>${formatCurrency(details.fica.medicareTax)}</span></div>`;
+            html += `<div class="calc-line"><span>Additional Medicare (0.9% over $200,000):</span><span>${formatCurrency(details.fica.additionalMedicare)}</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>Total FICA:</span><span>${formatCurrency(totalFICA)}</span></div>`;
+            html += '</div>';
+
+            return html;
+        }
+
+        function generateSGDetailsHTML(details, totalSGTax, totalCPF) {
+            let html = '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 1: Convert Income to SGD</div>';
+            html += `<div class="calc-line"><span>Income (USD):</span><span>${formatCurrency(details.incomeUSD)}</span></div>`;
+            html += `<div class="calc-line"><span>Exchange Rate:</span><span>1 USD = ${details.exchangeRate.toFixed(4)} SGD</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>Income (SGD):</span><span>SGD ${details.incomeSGD.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`;
+            html += '</div>';
+
+            html += '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 2: Singapore Income Tax (Progressive Rates)</div>';
+            details.brackets.forEach(bracket => {
+                const limitStr = bracket.to === Infinity ? '∞' : `SGD ${bracket.to.toLocaleString()}`;
+                html += `<div class="calc-line"><span>SGD ${bracket.from.toLocaleString()} - ${limitStr} @ ${(bracket.rate * 100).toFixed(1)}%:</span><span>SGD ${bracket.taxableAmount.toLocaleString()} × ${(bracket.rate * 100).toFixed(1)}% = SGD ${bracket.tax.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`;
+            });
+            const sgTaxSGD = details.brackets.reduce((sum, b) => sum + b.tax, 0);
+            html += `<div class="calc-line calc-line-result"><span>Total SG Tax (SGD):</span><span>SGD ${sgTaxSGD.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>Total SG Tax (USD):</span><span>${formatCurrency(totalSGTax)}</span></div>`;
+            html += '</div>';
+
+            html += '<div class="calc-step">';
+            html += '<div class="calc-step-title">Step 3: CPF Employee Contribution</div>';
+            html += `<div class="calc-line"><span>Age:</span><span>${details.cpf.age} years</span></div>`;
+            html += `<div class="calc-line"><span>CPF Rate:</span><span>${(details.cpf.rate * 100).toFixed(1)}%</span></div>`;
+            html += `<div class="calc-line"><span>Annual Salary Ceiling:</span><span>SGD ${details.cpf.ceiling.toLocaleString()}</span></div>`;
+            html += `<div class="calc-line"><span>CPF Base (capped):</span><span>SGD ${details.cpf.base.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>CPF Contribution (SGD):</span><span>SGD ${details.cpf.contributionSGD.toLocaleString('en-US', {minimumFractionDigits: 2})}</span></div>`;
+            html += `<div class="calc-line calc-line-result"><span>CPF Contribution (USD):</span><span>${formatCurrency(totalCPF)}</span></div>`;
+            html += '</div>';
+
+            if (details.incomeUSD > details.usExpat.feie) {
+                html += '<div class="calc-step">';
+                html += '<div class="calc-step-title">Step 4: US Tax Obligations While in Singapore</div>';
+                html += `<div class="calc-line"><span>Foreign Earned Income Exclusion (FEIE):</span><span>${formatCurrency(details.usExpat.feie)}</span></div>`;
+                html += `<div class="calc-line"><span>Income after FEIE:</span><span>${formatCurrency(details.usExpat.incomeAfterFEIE)}</span></div>`;
+                html += `<div class="calc-line"><span>Taxable after FEIE & Std Deduction:</span><span>${formatCurrency(details.usExpat.taxableAfterFEIE)}</span></div>`;
+                
+                if (details.usExpat.expatBrackets.length > 0) {
+                    html += '<div style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--color-text-secondary);">US Tax on Income Above FEIE:</div>';
+                    details.usExpat.expatBrackets.forEach(bracket => {
+                        const limitStr = bracket.to === Infinity ? '∞' : formatCurrency(bracket.to);
+                        html += `<div class="calc-line"><span>${formatCurrency(bracket.from)} - ${limitStr} @ ${(bracket.rate * 100).toFixed(1)}%:</span><span>${formatCurrency(bracket.taxableAmount)} × ${(bracket.rate * 100).toFixed(1)}% = ${formatCurrency(bracket.tax)}</span></div>`;
+                    });
+                }
+                
+                html += `<div class="calc-line calc-line-result"><span>US Tax Before Credit:</span><span>${formatCurrency(details.usExpat.usTaxBeforeCredit)}</span></div>`;
+                html += `<div class="calc-line"><span>Foreign Tax Credit (SG tax paid):</span><span>-${formatCurrency(details.usExpat.foreignTaxCredit)}</span></div>`;
+                html += `<div class="calc-line calc-line-result"><span>Net US Tax Due:</span><span>${formatCurrency(details.usExpat.netUSTax)}</span></div>`;
+                html += '</div>';
+            } else {
+                html += '<div class="calc-step">';
+                html += '<div class="calc-step-title">Step 4: US Tax Obligations While in Singapore</div>';
+                html += `<div class="calc-line"><span>Income below FEIE threshold of ${formatCurrency(details.usExpat.feie)}</span></div>`;
+                html += `<div class="calc-line calc-line-result"><span>Net US Tax Due:</span><span>$0</span></div>`;
+                html += '</div>';
+            }
+
+            return html;
+        }
+
+        // Calculate on page load with slight delay to allow rate fetch
+        setTimeout(calculate, 500);
+    </script>
+</body>
+</html>
